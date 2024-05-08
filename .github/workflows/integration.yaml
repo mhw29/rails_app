@@ -1,34 +1,61 @@
-name: Build and Push Container
+name: AWS ECR Push
 
 on:
   push:
-    branches:
-      - main
+    branches: ['main']
+  # release:
+  #   types: ['published']
+
+env:
+  AWS_REGION: "us-east-1"
+  AWS_ACCOUNT_ID: "943337485558"
 
 jobs:
-  build-and-push:
+  deploy:
+    name: Push to ECR
     runs-on: ubuntu-latest
 
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
-          aws-region: aws-region-1
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          mask-password: 'false'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-      - name: Build and tag container
-        run: |
-          docker build -t 943337485558.dkr.ecr.us-east-1.amazonaws.com/rails_app .
-          docker tag 943337485558.dkr.ecr.us-east-1.amazonaws.com/rails_app:latest 943337485558.dkr.ecr.us-east-1.amazonaws.com/rails_app:latest
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-actions-${{ github.event.repository.name }}
+        aws-region: ${{ env.AWS_REGION }}
 
-      - name: Push container to ECR
-        run: docker push 943337485558.dkr.ecr.us-east-1.amazonaws.com/rails_app:latest
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ github.event.repository.name }}
+        tags: |
+          type=schedule,pattern=latest
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=ref,event=branch
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
