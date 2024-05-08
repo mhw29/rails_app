@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "github_actions" {
 }
 
 resource "aws_iam_policy" "github_actions" {
-  name        = "github-actions-${var.name}"
+  name        = "github-actions-mhw29-${var.name}"
   description = "Grant Github Actions the ability to push to ${var.name} from explosion/${var.name}"
   policy      = data.aws_iam_policy_document.github_actions.json
 }
