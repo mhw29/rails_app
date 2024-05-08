@@ -1,0 +1,34 @@
+name: Build and Push Container
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
+          aws-region: aws-region-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
+
+      - name: Build and tag container
+        run: |
+          docker build -t 943337485558.dkr.ecr.us-east-1.amazonaws.com/rails_app .
+          docker tag 943337485558.dkr.ecr.us-east-1.amazonaws.com/rails_app:latest 943337485558.dkr.ecr.us-east-1.amazonaws.com/rails_app:latest
+
+      - name: Push container to ECR
+        run: docker push 943337485558.dkr.ecr.us-east-1.amazonaws.com/rails_app:latest
