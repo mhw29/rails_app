@@ -12,3 +12,7 @@ variable "organization" {
   description = "Github organization"
   default     = "mhw29"
 }
+
+variable "oidc_arn" {
+  description = "OIDC provider ARN"
+}
