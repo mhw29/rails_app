@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.arn]
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
     }
     condition {
       test     = "StringLike"
