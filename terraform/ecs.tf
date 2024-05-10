@@ -138,7 +138,7 @@ resource "aws_lb_listener" "ecs_alb_listener" {
 
 resource "aws_lb_target_group" "ecs_tg" {
  name        = "ecs-target-group"
- port        = 80
+ port        = 3000
  protocol    = "HTTP"
  target_type = "ip"
  vpc_id      = aws_vpc.main.id
@@ -198,7 +198,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
      portMappings = [
        {
          containerPort = 3000
-         hostPort      = 80
+         hostPort      = 3000
          protocol      = "tcp"
        }
      ]
