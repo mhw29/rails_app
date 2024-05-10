@@ -203,7 +203,15 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
          hostPort      = 3000
          protocol      = "tcp"
        }
-     ]
+     ],
+     logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_logs.name
+          awslogs-region        = "us-east-1"
+          awslogs-stream-prefix = "ecs"
+        }
+      }
    }
  ])
 }
@@ -240,4 +248,32 @@ resource "aws_ecs_service" "ecs_service" {
  }
 
  depends_on = [aws_autoscaling_group.ecs_asg]
+}
+
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name = "/ecs/my-ecs-logs" 
+}
+
+resource "aws_iam_policy" "ecs_logging" {
+  name        = "ecsLoggingPolicy"
+  description = "Allows ECS tasks to push logs to CloudWatch."
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:CreateLogGroup"
+        ],
+        Resource = "arn:aws:logs:*:*:log-group:/ecs/my-ecs-logs:*",
+        Effect   = "Allow"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_logs_attachment" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = aws_iam_policy.ecs_logging.arn
 }
