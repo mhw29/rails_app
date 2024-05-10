@@ -134,6 +134,8 @@ resource "aws_lb_listener" "ecs_alb_listener" {
    type             = "forward"
    target_group_arn = aws_lb_target_group.ecs_tg.arn
  }
+
+
 }
 
 resource "aws_lb_target_group" "ecs_tg" {
@@ -146,6 +148,8 @@ resource "aws_lb_target_group" "ecs_tg" {
  health_check {
    path = "/"
  }
+
+    depends_on = [aws_lb_listener.ecs_alb_listener]
 }
 
 resource "aws_ecs_cluster" "ecs_cluster" {
