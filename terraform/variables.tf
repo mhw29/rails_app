@@ -16,3 +16,9 @@ variable "organization" {
 variable "oidc_arn" {
   description = "OIDC provider ARN"
 }
+
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC"
+  default     = "10.0.0.0/16"
+}
+
