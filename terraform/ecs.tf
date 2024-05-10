@@ -68,7 +68,7 @@ resource "aws_security_group" "security_group" {
 
 resource "aws_launch_template" "ecs_lt" {
  name_prefix   = "ecs-template"
- image_id      = "ami-062c116e449466e7f"
+ image_id      = "ami-07caf09b362be10b8"
  instance_type = "t3.micro"
 
  key_name               = "ec2ecsglog"
