@@ -132,8 +132,22 @@ export const config: Options.Testrunner = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec'],
-
+    // reporters: ['spec'],
+    reporters: ['spec', 
+        
+        ['testrail', {
+            projectId: 1,
+            suiteId: 1,
+            domain: 'mahwill29.testrail.io',
+            username: process.env.TESTRAIL_USERNAME,
+            apiToken: process.env.TESTRAIL_API_TOKEN,
+            runName: 'Rails Application Test Run',
+            oneReport: true,
+            includeAll: false
+        }
+        ]
+        
+    ],
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
     mochaOpts: {
