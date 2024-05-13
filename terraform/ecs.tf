@@ -277,6 +277,6 @@ data "aws_iam_role" "ecs_instance_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_logs_attachment" {
-  role       = aws_iam_role.ecs_instance_role.name
+  role       = data.aws_iam_role.ecs_instance_role.name
   policy_arn = aws_iam_policy.ecs_logging.arn
 }
