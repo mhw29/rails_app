@@ -254,6 +254,10 @@ resource "aws_cloudwatch_log_group" "ecs_logs" {
   name = "/ecs/my-ecs-logs" 
 }
 
+data "aws_iam_role" "ecs_instance_role" {
+  name = "ecsInstanceRole"
+}
+
 resource "aws_iam_policy" "ecs_logging" {
   name        = "ecsLoggingPolicy"
   description = "Allows ECS tasks to push logs to CloudWatch."
