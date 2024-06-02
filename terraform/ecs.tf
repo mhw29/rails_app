@@ -276,9 +276,6 @@ resource "aws_iam_policy" "ecs_logging" {
     ]
   })
 }
-data "aws_iam_role" "ecs_instance_role" {
-  name = "ecsInstanceRole"
-}
 
 resource "aws_iam_role_policy_attachment" "ecs_logs_attachment" {
   role       = data.aws_iam_role.ecs_instance_role.name
