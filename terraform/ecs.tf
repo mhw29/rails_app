@@ -268,7 +268,9 @@ resource "aws_iam_policy" "ecs_logging" {
         Action = [
           "logs:CreateLogStream",
           "logs:PutLogEvents",
-          "logs:CreateLogGroup"
+          "logs:CreateLogGroup",
+          "logs:ListTagsLogGroup"
+
         ],
         Resource = "arn:aws:logs:*:*:log-group:/ecs/my-ecs-logs:*",
         Effect   = "Allow"
